@@ -69,6 +69,12 @@ const Category = styled.div`
     margin-left: 1rem;
   }
 `;
+/* Categories를 정의하고 해당 컴포넌트에 category와 onSelect라는 두 개의 props를 전달
+categories배열을 순회하면서 각 카테고리에 대한 ui를 생성한다.
+category와 c.name이 일치하면 active props를 설정한다.
+c는 map함수 내에서 사용된 루프 변수로 , categories배열의 각 요소를 순회하면서 현재 요소를
+나타내는 변수! 약간 for문에서 i와 유사한 역할을 한다.
+*/
 const Categories = ({ onSelect, category }) => {
   return (
     <CategoriesBlock>
