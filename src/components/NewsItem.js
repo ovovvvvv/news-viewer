@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { ImageResponse } from '../../../node_modules/next/server';
 
 const NewsItemBlock = styled.div`
   display: flex;
