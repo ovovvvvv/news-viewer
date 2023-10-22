@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import NewsItem from './NewsItem';
+import usePromise from '../lib/usePromise';
 import axios from 'axios';
 
 const NewsListBlock = styled.div`
@@ -17,44 +17,29 @@ const NewsListBlock = styled.div`
 `;
 
 const NewsList = ({ category }) => {
-  const [articles, setArticles] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    //async를 사용하는 함수 따로 선언
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        /* 
-        category값이 all이라면 query값을 공백으로 설정, all이 아니라면
-        "&category=카테고리" 형태의 문자열을 만든다. 그리고 이 쿼리를 주소에 포함시켜 줌
-        */
-        const query = category === 'all' ? '' : `&category=${category}`;
-        const response = await axios.get(
-          `https://newsapi.org/v2/top-headlines?country=kr${query}&apiKey=432d8f033cc64de8acbf5fb760576266`,
-        );
-        setArticles(response.data.articles);
-      } catch (e) {
-        console.log(e);
-      }
-      setLoading(false);
-    };
-    fetchData();
-    /* category값이 바뀔 때마다 뉴스를 새로 불러와야 하기 때문에 useEffect의 의존 배열
-    (두 번째 파라미터로 설정하는 배열)에 category를 넣어주어야 한다. */
+  const [loading, response, error] = usePromise(() => {
+    const query = category === 'all' ? '' : `&category=${category}`;
+    return axios.get(
+      `https://newsapi.org/v2/top-headlines?country=kr${query}&apiKey=432d8f033cc64de8acbf5fb760576266`,
+    );
   }, [category]);
-
-  //대기중일 때
+  // 대기 중일 때
   if (loading) {
-    return <NewsListBlock>대기중...</NewsListBlock>;
+    return <NewsListBlock>대기 중...</NewsListBlock>;
   }
-  // 아직 articles 값이 설정되지 않았을 때
-  if (!articles) {
-    console.log('No data');
+
+  //아직 response값이 설정되지 않았을 떄
+  if (!response) {
     return null;
   }
 
-  // articles 값이 유효할 때
+  //에러가 발생했을 때
+  if (error) {
+    return <NewsListBlock>에러 발생!</NewsListBlock>;
+  }
+
+  // response 값이 유효할때
+  const { articles } = response.data;
   return (
     <NewsListBlock>
       {articles.map((article) => (
