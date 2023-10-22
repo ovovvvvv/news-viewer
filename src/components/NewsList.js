@@ -16,7 +16,7 @@ const NewsListBlock = styled.div`
   }
 `;
 
-const NewsList = () => {
+const NewsList = ({ category }) => {
   const [articles, setArticles] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -25,8 +25,13 @@ const NewsList = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
+        /* 
+        category값이 all이라면 query값을 공백으로 설정, all이 아니라면
+        "&category=카테고리" 형태의 문자열을 만든다. 그리고 이 쿼리를 주소에 포함시켜 줌
+        */
+        const query = category === 'all' ? '' : `&category=${category}`;
         const response = await axios.get(
-          `https://newsapi.org/v2/top-headlines?country=kr&apiKey=432d8f033cc64de8acbf5fb760576266`,
+          `https://newsapi.org/v2/top-headlines?country=kr${query}&apiKey=432d8f033cc64de8acbf5fb760576266`,
         );
         setArticles(response.data.articles);
       } catch (e) {
@@ -35,7 +40,9 @@ const NewsList = () => {
       setLoading(false);
     };
     fetchData();
-  }, []);
+    /* category값이 바뀔 때마다 뉴스를 새로 불러와야 하기 때문에 useEffect의 의존 배열
+    (두 번째 파라미터로 설정하는 배열)에 category를 넣어주어야 한다. */
+  }, [category]);
 
   //대기중일 때
   if (loading) {
