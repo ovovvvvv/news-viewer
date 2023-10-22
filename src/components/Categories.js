@@ -1,4 +1,5 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
+import { NavLink } from 'react-router-dom';
 
 const categories = [
   {
@@ -42,7 +43,7 @@ const CategoriesBlock = styled.div`
   }
 `;
 
-const Category = styled.div`
+const Category = styled(NavLink)`
   font-size: 1.125rem;
   cursor: pointer;
   white-space: pre;
@@ -54,50 +55,44 @@ const Category = styled.div`
     color: #495057;
   }
 
-  ${(props) =>
-    props.active &&
-    css`
-      font-weight: 600;
-      border-bottom: 2px solid #22b8cf;
-      color: #22b8cf;
-      &:hover {
-        color: #3bc9db;
-      }
-    `}
-
+  //현재 활성화된 링크에 대한 스타일을 정의
+  &.active {
+    font-weight: 600;
+    border-bottom: 2px solid @22b8cf;
+    color: #22b8cf;
+    &:hover {
+      color: 3bc9db;
+    }
+  }
   & + & {
     margin-left: 1rem;
   }
 `;
-/* Categories를 정의하고 해당 컴포넌트에 category와 onSelect라는 두 개의 props를 전달
-categories배열을 순회하면서 각 카테고리에 대한 ui를 생성한다.
-category와 c.name이 일치하면 active props를 설정한다.
-c는 map함수 내에서 사용된 루프 변수로 , categories배열의 각 요소를 순회하면서 현재 요소를
-나타내는 변수! 약간 for문에서 i와 유사한 역할을 한다.
-*/
-const Categories = ({ onSelect, category }) => {
+
+const Categories = () => {
   return (
     <CategoriesBlock>
       {categories.map((c) => (
         <Category
           key={c.name}
-          active={category === c.name}
-          onClick={() => onSelect(c.name)}
+          className={({ isActive }) => (isActive ? 'active' : undefined)}
+          to={c.name === 'all' ? '/' : `/${c.name}`}
         >
           {c.text}
         </Category>
       ))}
     </CategoriesBlock>
+    /* 
+    'to' props를 사용하여 각 카테고리에 대한 동적 url을 생성하고, 현재 선택된 카테고리에 대한
+    active 클래스를 동적으로 추가하여 활성화된 링크를 강조
+    'isActive는 NavLink컴포넌트가 현재 활성화 된 상태인지를 나타내는 부울 값.
+    NavLink는 현재 url과 to prop에서 지정한 url이 일치할 때 isActive를 true로 설정한다.
+
+    기본적으로 isActive는 현재 URL과 to prop에서 지정한 URL이 정확히 일치할 때만
+     true로 설정됩니다. 그러므로 현재 페이지가 해당 링크에 해당하는 경우에만 active 
+     클래스가 적용됩니다.
+    */
   );
 };
-/*
-styled-components를 사용할 때 & 기호와 :hover를 함께 사용하는 것은 CSS의
- 가상 선택자(Virtual Selector) 중 하나인 :hover 상태에 스타일을 적용하겠다는 의미입니다.
-여기서 &는 현재 정의된 스타일 블록의 선택자 자체를 나타냅니다. 따라서 &:hover는 
-이 스타일 블록의 해당 요소가 마우스 커서가 호버(위에 올라가는) 상태일 때의 스타일을 정의합니다.
-예를 들어, 위의 코드에서 Category 스타일드 컴포넌트는 일반적으로 텍스트의 색상을 상속하고,
- 호버 상태일 때 텍스트의 색상을 #495057로 변경하도록 정의되어 있습니다. 
- 이렇게 하면 사용자가 해당 요소 위에 마우스를 올리면 텍스트의 색상이 변경되는 효과를 얻을 수 있습니다.
-*/
 
 export default Categories;
